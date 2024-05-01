@@ -20,9 +20,6 @@ module ActsAsFollower
   end
 
   def self.method_missing(method_name, *args, &block)
-    if method_name == :custom_parent_classes=
-      ActsAsFollower::MyCustomDeprecation.warn("Setting custom parent classes is deprecated and will be removed in future versions.")
-    end
     @configuration.respond_to?(method_name) ?
         @configuration.send(method_name, *args, &block) : super
   end
