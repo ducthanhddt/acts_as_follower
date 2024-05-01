@@ -6,6 +6,14 @@ module ActsAsFollower
   autoload :FollowerLib,  'acts_as_follower/follower_lib'
   autoload :FollowScopes, 'acts_as_follower/follow_scopes'
 
+  module MyCustomDeprecation
+    def self.warn(message, callstack = caller)
+      # Log the message to a file, or handle it however you need
+      Rails.logger.warn("Deprecation Warning: #{message}")
+      Rails.logger.warn("Called from: #{callstack.join("\n")}")
+    end
+  end
+
   def self.setup
     @configuration ||= Configuration.new
     yield @configuration if block_given?
@@ -13,7 +21,7 @@ module ActsAsFollower
 
   def self.method_missing(method_name, *args, &block)
     if method_name == :custom_parent_classes=
-      ActiveSupport::Deprecation.warn("Setting custom parent classes is deprecated and will be removed in future versions.")
+      ActsAsFollower::MyCustomDeprecation.warn("Setting custom parent classes is deprecated and will be removed in future versions.")
     end
     @configuration.respond_to?(method_name) ?
         @configuration.send(method_name, *args, &block) : super
